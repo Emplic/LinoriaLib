@@ -5510,20 +5510,18 @@ function Library:CreateWindow(...)
 
         OriginalTitle = Config.Title; Title = Config.Title;
     };
-    
     local Outer = Library:Create('Frame', {
-        AnchorPoint = Config.AnchorPoint;
-        BackgroundColor3 = Library.AccentColor;  -- Accent color as outer border
-        BorderSizePixel = 0;
-        Position = Config.Position;
-        Size = Config.Size;
-        Visible = false;
-        ZIndex = 1;
-        Parent = ScreenGui;
-        Name = "Window";
-    });
+    AnchorPoint = Config.AnchorPoint;
+    BackgroundColor3 = Library.AccentColor;
+    BorderSizePixel = 0;
+    Position = Config.Position;
+    Size = Config.Size;
+    Visible = false;
+    ZIndex = 1;
+    Parent = ScreenGui;
+    Name = "Window";
+});
 
-    -- Add rounded corners to the outer frame (accent color)
     local UICorner_Outer = Instance.new("UICorner")
     UICorner_Outer.CornerRadius = UDim.new(0, 8)
     UICorner_Outer.Parent = Outer
@@ -5531,25 +5529,32 @@ function Library:CreateWindow(...)
     local Inner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.AccentColor;
-        BorderSizePixel = 0;  -- Remove the border since we're using the outer frame as border
-        Position = UDim2.new(0, 2, 0, 2);  -- Adjust position to show accent border
-        Size = UDim2.new(1, -4, 1, -4);    -- Adjust size to show accent border
+        BorderSizePixel = 0; 
+        Position = UDim2.new(0, 2, 0, 2);
+        Size = UDim2.new(1, -4, 1, -4);   
         ZIndex = 1;
         Parent = Outer;
     });
 
-    -- Add rounded corners to the inner frame (main content area)
     local UICorner_Inner = Instance.new("UICorner")
     UICorner_Inner.CornerRadius = UDim.new(0, 6)
     UICorner_Inner.Parent = Inner
 
     Library:AddToRegistry(Outer, {
-        BackgroundColor3 = 'AccentColor';  -- Outer border follows accent color
+        BackgroundColor3 = 'AccentColor'; 
     });
 
     Library:AddToRegistry(Inner, {
         BackgroundColor3 = 'MainColor';
         BorderColor3 = 'AccentColor';
+    });
+
+    local DraggableHeader = Library:Create('Frame', {
+        BackgroundTransparency = 1;  
+        Position = UDim2.new(0, 0, 0, 0);
+        Size = UDim2.new(1, 0, 0, 30); 
+        ZIndex = 10; 
+        Parent = Outer;
     });
 
     local WindowLabel = Library:CreateLabel({
@@ -5570,7 +5575,6 @@ function Library:CreateWindow(...)
         Parent = Inner;
     });
 
-    -- Add rounded corners to the main content section
     local MainSectionCorner = Instance.new("UICorner")
     MainSectionCorner.CornerRadius = UDim.new(0, 4)
     MainSectionCorner.Parent = MainSectionOuter
@@ -5593,6 +5597,8 @@ function Library:CreateWindow(...)
     Library:AddToRegistry(MainSectionInner, {
         BackgroundColor3 = 'BackgroundColor';
     });
+
+    Library:MakeDraggable(DraggableHeader, 25, true);
 
     local TabArea = Library:Create('ScrollingFrame', {
         ScrollingDirection = Enum.ScrollingDirection.X;
