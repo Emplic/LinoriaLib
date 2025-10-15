@@ -3341,233 +3341,277 @@ UICorner_Inner.Parent = Inner
         return Textbox;
     end;
 
-    function BaseGroupboxFuncs:AddToggle(Idx, Info)
-        assert(Info.Text, string.format('AddInput (IDX: %s): Missing `Text` string.', tostring(Idx)));
+function BaseGroupboxFuncs:AddToggle(Idx, Info)
+    assert(Info.Text, string.format('AddInput (IDX: %s): Missing `Text` string.', tostring(Idx)));
 
-        local Toggle = {
-            Value = Info.Default or false;
-            Type = 'Toggle';
-            Visible = if typeof(Info.Visible) == "boolean" then Info.Visible else true;
-            Disabled = if typeof(Info.Disabled) == "boolean" then Info.Disabled else false;
-            Risky = if typeof(Info.Risky) == "boolean" then Info.Risky else false;
-            OriginalText = Info.Text; Text = Info.Text;
+    local Toggle = {
+        Value = Info.Default or false;
+        Type = 'Toggle';
+        Visible = if typeof(Info.Visible) == "boolean" then Info.Visible else true;
+        Disabled = if typeof(Info.Disabled) == "boolean" then Info.Disabled else false;
+        Risky = if typeof(Info.Risky) == "boolean" then Info.Risky else false;
+        OriginalText = Info.Text; Text = Info.Text;
 
-            Callback = Info.Callback or function(Value) end;
-            Addons = {};
-        };
+        Callback = Info.Callback or function(Value) end;
+        Addons = {};
+    };
 
-        local Blank;
-        local Tooltip;
-        local Groupbox = self;
-        local Container = Groupbox.Container;
+    local Blank;
+    local Tooltip;
+    local Groupbox = self;
+    local Container = Groupbox.Container;
 
-        local ToggleContainer = Library:Create('Frame', {
-            BackgroundTransparency = 1;
-            Size = UDim2.new(1, -4, 0, 13);
-            Visible = Toggle.Visible;
-            ZIndex = 5;
-            Parent = Container;
-        });
+    local ToggleContainer = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        Size = UDim2.new(1, -4, 0, 20);  -- Increased height for circular toggle
+        Visible = Toggle.Visible;
+        ZIndex = 5;
+        Parent = Container;
+    });
 
-        local ToggleOuter = Library:Create('Frame', {
-            BackgroundColor3 = Color3.new(0, 0, 0);
-            BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, 13, 0, 13);
-            Visible = Toggle.Visible;
-            ZIndex = 5;
-            Parent = ToggleContainer;
-        });
+    -- Circular toggle background (track)
+    local ToggleTrack = Library:Create('Frame', {
+        BackgroundColor3 = Color3.new(0, 0, 0);
+        BorderColor3 = Color3.new(0, 0, 0);
+        Size = UDim2.new(0, 36, 0, 20);
+        Visible = Toggle.Visible;
+        ZIndex = 5;
+        Parent = ToggleContainer;
+    });
 
-        Library:AddToRegistry(ToggleOuter, {
-            BorderColor3 = 'Black';
-        });
+    -- Make it circular
+    local TrackCorner = Instance.new("UICorner")
+    TrackCorner.CornerRadius = UDim.new(1, 0)  -- Fully circular
+    TrackCorner.Parent = ToggleTrack
 
-        local ToggleInner = Library:Create('Frame', {
-            BackgroundColor3 = Library.MainColor;
-            BorderColor3 = Library.OutlineColor;
-            BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(1, 0, 1, 0);
-            ZIndex = 6;
-            Parent = ToggleOuter;
-        });
+    Library:AddToRegistry(ToggleTrack, {
+        BorderColor3 = 'Black';
+    });
 
-        Library:AddToRegistry(ToggleInner, {
-            BackgroundColor3 = 'MainColor';
-            BorderColor3 = 'OutlineColor';
-        });
+    local ToggleInner = Library:Create('Frame', {
+        BackgroundColor3 = Library.MainColor;
+        BorderColor3 = Library.OutlineColor;
+        BorderMode = Enum.BorderMode.Inset;
+        Size = UDim2.new(1, 0, 1, 0);
+        ZIndex = 6;
+        Parent = ToggleTrack;
+    });
 
-        local ToggleLabel = Library:CreateLabel({
-            Size = UDim2.new(1, -19, 0, 11); -- size of toggle box (13) + size offset of previous layout (6)
-            Position = UDim2.new(0, 19, 0, 0);
-            TextSize = 14;
-            Text = Info.Text;
-            TextXAlignment = Enum.TextXAlignment.Left;
-            ZIndex = 6;
-            Parent = ToggleContainer;
-            RichText = true;
-        });
+    -- Make inner also circular
+    local InnerCorner = Instance.new("UICorner")
+    InnerCorner.CornerRadius = UDim.new(1, 0)  -- Fully circular
+    InnerCorner.Parent = ToggleInner
 
-        Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 4);
-            FillDirection = Enum.FillDirection.Horizontal;
-            HorizontalAlignment = Enum.HorizontalAlignment.Right;
-            SortOrder = Enum.SortOrder.LayoutOrder;
-            Parent = ToggleLabel;
-        });
+    Library:AddToRegistry(ToggleInner, {
+        BackgroundColor3 = 'MainColor';
+        BorderColor3 = 'OutlineColor';
+    });
 
-        local ToggleRegion = Library:Create('Frame', {
-            BackgroundTransparency = 1;
-            Size = UDim2.new(0, 170, 1, 0);
-            ZIndex = 8;
-            Parent = ToggleOuter;
-        });
+    -- Circular toggle knob
+    local ToggleKnob = Library:Create('Frame', {
+        BackgroundColor3 = Library.AccentColor;
+        BorderColor3 = Library.AccentColorDark;
+        Size = UDim2.new(0, 14, 0, 14);
+        Position = UDim2.new(0, 3, 0.5, -7);
+        ZIndex = 7;
+        Parent = ToggleInner;
+    });
 
-        Library:OnHighlight(ToggleRegion, ToggleOuter,
-            { BorderColor3 = 'AccentColor' },
-            { BorderColor3 = 'Black' },
-            function()
-                if Toggle.Disabled then
-                    return false;
-                end;
+    -- Make knob circular
+    local KnobCorner = Instance.new("UICorner")
+    KnobCorner.CornerRadius = UDim.new(1, 0)  -- Fully circular
+    KnobCorner.Parent = ToggleKnob
 
-                for _, Addon in next, Toggle.Addons do
-                    if Library:MouseIsOverFrame(Addon.DisplayFrame) then return false end
-                end
-                return true
-            end
-        );
+    Library:AddToRegistry(ToggleKnob, {
+        BackgroundColor3 = 'AccentColor';
+        BorderColor3 = 'AccentColorDark';
+    });
 
-        function Toggle:UpdateColors()
-            Toggle:Display();
-        end;
+    local ToggleLabel = Library:CreateLabel({
+        Size = UDim2.new(1, -44, 0, 20);  -- Adjusted for circular toggle
+        Position = UDim2.new(0, 44, 0, 0);
+        TextSize = 14;
+        Text = Info.Text;
+        TextXAlignment = Enum.TextXAlignment.Left;
+        ZIndex = 6;
+        Parent = ToggleContainer;
+        RichText = true;
+    });
 
-        if typeof(Info.Tooltip) == "string" or typeof(Info.DisabledTooltip) == "string" then
-            Tooltip = Library:AddToolTip(Info.Tooltip, Info.DisabledTooltip, ToggleRegion)
-            Tooltip.Disabled = Toggle.Disabled;
-        end
+    Library:Create('UIListLayout', {
+        Padding = UDim.new(0, 4);
+        FillDirection = Enum.FillDirection.Horizontal;
+        HorizontalAlignment = Enum.HorizontalAlignment.Right;
+        SortOrder = Enum.SortOrder.LayoutOrder;
+        Parent = ToggleLabel;
+    });
 
-        function Toggle:Display()
+    local ToggleRegion = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        Size = UDim2.new(0, 170, 1, 0);
+        ZIndex = 8;
+        Parent = ToggleTrack;
+    });
+
+    Library:OnHighlight(ToggleRegion, ToggleTrack,
+        { BorderColor3 = 'AccentColor' },
+        { BorderColor3 = 'Black' },
+        function()
             if Toggle.Disabled then
-                ToggleLabel.TextColor3 = Library.DisabledTextColor;
-
-                ToggleInner.BackgroundColor3 = Toggle.Value and Library.DisabledAccentColor or Library.MainColor;
-                ToggleInner.BorderColor3 = Library.DisabledOutlineColor;
-
-                Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'DisabledAccentColor' or 'MainColor';
-                Library.RegistryMap[ToggleInner].Properties.BorderColor3 = 'DisabledOutlineColor';
-                Library.RegistryMap[ToggleLabel].Properties.TextColor3 = 'DisabledTextColor';
-
-                return;
+                return false;
             end;
-
-            ToggleLabel.TextColor3 = Toggle.Risky and Library.RiskColor or Color3.new(1, 1, 1);
-
-            ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
-            ToggleInner.BorderColor3 = Toggle.Value and Library.AccentColorDark or Library.OutlineColor;
-
-            Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'MainColor';
-            Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and 'AccentColorDark' or 'OutlineColor';
-
-            Library.RegistryMap[ToggleLabel].Properties.TextColor3 = Toggle.Risky and 'RiskColor' or nil;
-        end;
-
-        function Toggle:OnChanged(Func)
-            Toggle.Changed = Func;
-
-            if Toggle.Disabled then
-                return;
-            end;
-
-            Library:SafeCallback(Func, Toggle.Value);
-        end;
-
-        function Toggle:SetValue(Bool)
-            if Toggle.Disabled then
-                return;
-            end;
-
-            Bool = (not not Bool);
-
-            Toggle.Value = Bool;
-            Toggle:Display();
 
             for _, Addon in next, Toggle.Addons do
-                if Addon.Type == 'KeyPicker' and Addon.SyncToggleState then
-                    Addon.Toggled = Bool
-                    Addon:Update()
-                end
+                if Library:MouseIsOverFrame(Addon.DisplayFrame) then return false end
             end
+            return true
+        end
+    );
 
-            if not Toggle.Disabled then
-                Library:SafeCallback(Toggle.Callback, Toggle.Value);
-                Library:SafeCallback(Toggle.Changed, Toggle.Value);
-            end;
+    function Toggle:UpdateColors()
+        Toggle:Display();
+    end;
 
-            Library:UpdateDependencyBoxes();
+    if typeof(Info.Tooltip) == "string" or typeof(Info.DisabledTooltip) == "string" then
+        Tooltip = Library:AddToolTip(Info.Tooltip, Info.DisabledTooltip, ToggleRegion)
+        Tooltip.Disabled = Toggle.Disabled;
+    end
+
+    function Toggle:Display()
+        if Toggle.Disabled then
+            ToggleLabel.TextColor3 = Library.DisabledTextColor;
+
+            ToggleInner.BackgroundColor3 = Toggle.Value and Library.DisabledAccentColor or Library.MainColor;
+            ToggleInner.BorderColor3 = Library.DisabledOutlineColor;
+            ToggleKnob.BackgroundColor3 = Library.DisabledAccentColor;
+            ToggleKnob.BorderColor3 = Library.DisabledOutlineColor;
+
+            Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'DisabledAccentColor' or 'MainColor';
+            Library.RegistryMap[ToggleInner].Properties.BorderColor3 = 'DisabledOutlineColor';
+            Library.RegistryMap[ToggleKnob].Properties.BackgroundColor3 = 'DisabledAccentColor';
+            Library.RegistryMap[ToggleKnob].Properties.BorderColor3 = 'DisabledOutlineColor';
+            Library.RegistryMap[ToggleLabel].Properties.TextColor3 = 'DisabledTextColor';
+
+            -- Position knob for disabled state
+            ToggleKnob.Position = Toggle.Value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7);
+            return;
         end;
 
-        function Toggle:SetVisible(Visibility)
-            Toggle.Visible = Visibility;
+        ToggleLabel.TextColor3 = Toggle.Risky and Library.RiskColor or Color3.new(1, 1, 1);
 
-            ToggleOuter.Visible = Toggle.Visible;
-            if Blank then Blank.Visible = Toggle.Visible end;
+        ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
+        ToggleInner.BorderColor3 = Toggle.Value and Library.AccentColorDark or Library.OutlineColor;
+        ToggleKnob.BackgroundColor3 = Toggle.Value and Color3.new(1, 1, 1) or Library.AccentColor;  -- White when on, accent when off
+        ToggleKnob.BorderColor3 = Toggle.Value and Library.OutlineColor or Library.AccentColorDark;
 
-            Groupbox:Resize();
+        Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'MainColor';
+        Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and 'AccentColorDark' or 'OutlineColor';
+        Library.RegistryMap[ToggleKnob].Properties.BackgroundColor3 = Toggle.Value and nil or 'AccentColor';  -- White doesn't need registry
+        Library.RegistryMap[ToggleKnob].Properties.BorderColor3 = Toggle.Value and 'OutlineColor' or 'AccentColorDark';
+
+        Library.RegistryMap[ToggleLabel].Properties.TextColor3 = Toggle.Risky and 'RiskColor' or nil;
+
+        -- Animate knob position
+        ToggleKnob.Position = Toggle.Value and UDim2.new(1, -17, 0.5, -7) or UDim2.new(0, 3, 0.5, -7);
+    end;
+
+    function Toggle:OnChanged(Func)
+        Toggle.Changed = Func;
+
+        if Toggle.Disabled then
+            return;
         end;
 
-        function Toggle:SetDisabled(Disabled)
-            Toggle.Disabled = Disabled;
+        Library:SafeCallback(Func, Toggle.Value);
+    end;
 
-            if Tooltip then
-                Tooltip.Disabled = Disabled;
+    function Toggle:SetValue(Bool)
+        if Toggle.Disabled then
+            return;
+        end;
+
+        Bool = (not not Bool);
+
+        Toggle.Value = Bool;
+        Toggle:Display();
+
+        for _, Addon in next, Toggle.Addons do
+            if Addon.Type == 'KeyPicker' and Addon.SyncToggleState then
+                Addon.Toggled = Bool
+                Addon:Update()
             end
+        end
 
-            Toggle:Display();
+        if not Toggle.Disabled then
+            Library:SafeCallback(Toggle.Callback, Toggle.Value);
+            Library:SafeCallback(Toggle.Changed, Toggle.Value);
         end;
 
-        function Toggle:SetText(Text)
-            if typeof(Text) == "string" then
-                Toggle.Text = Text;
-                ToggleLabel.Text = Toggle.Text;
-            end
-        end;
+        Library:UpdateDependencyBoxes();
+    end;
 
-        ToggleRegion.InputBegan:Connect(function(Input)
-            if Toggle.Disabled then
-                return;
-            end;
+    function Toggle:SetVisible(Visibility)
+        Toggle.Visible = Visibility;
 
-            if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
-                for _, Addon in next, Toggle.Addons do
-                    if Library:MouseIsOverFrame(Addon.DisplayFrame) then return end
-                end
+        ToggleTrack.Visible = Toggle.Visible;
+        if Blank then Blank.Visible = Toggle.Visible end;
 
-                Toggle:SetValue(not Toggle.Value) -- Why was it not like this from the start?
-                Library:AttemptSave();
-            end;
-        end);
+        Groupbox:Resize();
+    end;
 
-        if Toggle.Risky == true then
-            Library:RemoveFromRegistry(ToggleLabel)
+    function Toggle:SetDisabled(Disabled)
+        Toggle.Disabled = Disabled;
 
-            ToggleLabel.TextColor3 = Library.RiskColor
-            Library:AddToRegistry(ToggleLabel, { TextColor3 = 'RiskColor' })
+        if Tooltip then
+            Tooltip.Disabled = Disabled;
         end
 
         Toggle:Display();
-        Blank = Groupbox:AddBlank(Info.BlankSize or 5 + 2, Toggle.Visible);
-        Groupbox:Resize();
-
-        Toggle.TextLabel = ToggleLabel;
-        Toggle.Container = Container;
-        setmetatable(Toggle, BaseAddons);
-
-        Toggles[Idx] = Toggle;
-
-        Library:UpdateDependencyBoxes();
-
-        return Toggle;
     end;
+
+    function Toggle:SetText(Text)
+        if typeof(Text) == "string" then
+            Toggle.Text = Text;
+            ToggleLabel.Text = Toggle.Text;
+        end
+    end;
+
+    ToggleRegion.InputBegan:Connect(function(Input)
+        if Toggle.Disabled then
+            return;
+        end;
+
+        if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
+            for _, Addon in next, Toggle.Addons do
+                if Library:MouseIsOverFrame(Addon.DisplayFrame) then return end
+            end
+
+            Toggle:SetValue(not Toggle.Value)
+            Library:AttemptSave();
+        end;
+    end);
+
+    if Toggle.Risky == true then
+        Library:RemoveFromRegistry(ToggleLabel)
+
+        ToggleLabel.TextColor3 = Library.RiskColor
+        Library:AddToRegistry(ToggleLabel, { TextColor3 = 'RiskColor' })
+    end
+
+    Toggle:Display();
+    Blank = Groupbox:AddBlank(Info.BlankSize or 5 + 2, Toggle.Visible);
+    Groupbox:Resize();
+
+    Toggle.TextLabel = ToggleLabel;
+    Toggle.Container = Container;
+    setmetatable(Toggle, BaseAddons);
+
+    Toggles[Idx] = Toggle;
+
+    Library:UpdateDependencyBoxes();
+
+    return Toggle;
+end;
 
     function BaseGroupboxFuncs:AddSlider(Idx, Info)
         assert(Info.Default,    string.format('AddSlider (IDX: %s): Missing default value.', tostring(Idx)));
