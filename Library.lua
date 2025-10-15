@@ -374,6 +374,7 @@ function Library:CreateLabel(Properties, IsHud)
     return Library:Create(_Instance, Properties);
 end;
 
+
 function Library:MakeDraggable(Instance, Cutoff, IsMainWindow)
     Instance.Active = true;
 
@@ -389,16 +390,18 @@ function Library:MakeDraggable(Instance, Cutoff, IsMainWindow)
                     Mouse.Y - Instance.AbsolutePosition.Y
                 );
 
-                if ObjPos.Y > (Cutoff or 40) then
+                -- For rounded windows, allow dragging from anywhere in the top area
+                -- Remove or relax the cutoff check for rounded corners
+                if ObjPos.Y > (Cutoff or 40) and not IsMainWindow then
                     return;
                 end;
 
                 while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                    Instance.Position = UDim2.new(
+                    Instance.Parent.Position = UDim2.new(
                         0,
-                        Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
+                        Mouse.X - ObjPos.X + (Instance.Parent.Size.X.Offset * Instance.Parent.AnchorPoint.X),
                         0,
-                        Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
+                        Mouse.Y - ObjPos.Y + (Instance.Parent.Size.Y.Offset * Instance.Parent.AnchorPoint.Y)
                     );
 
                     RenderStepped:Wait();
@@ -417,10 +420,11 @@ function Library:MakeDraggable(Instance, Cutoff, IsMainWindow)
             if not Dragging and Library:MouseIsOverFrame(Instance, Input) and (IsMainWindow == true and (Library.CanDrag == true and Library.Window.Holder.Visible == true) or true) then
                 DraggingInput = Input;
                 DraggingStart = Input.Position;
-                StartPosition = Instance.Position;
+                StartPosition = Instance.Parent.Position;
 
                 local OffsetPos = Input.Position - DraggingStart;
-                if OffsetPos.Y > (Cutoff or 40) then
+                -- For rounded windows, allow dragging from anywhere in the top area
+                if OffsetPos.Y > (Cutoff or 40) and not IsMainWindow then
                     Dragging = false;
                     return;
                 end;
@@ -437,7 +441,7 @@ function Library:MakeDraggable(Instance, Cutoff, IsMainWindow)
             if Input == DraggingInput and Dragging and (IsMainWindow == true and (Library.CanDrag == true and Library.Window.Holder.Visible == true) or true) then
                 local OffsetPos = Input.Position - DraggingStart;
 
-                Instance.Position = UDim2.new(
+                Instance.Parent.Position = UDim2.new(
                     StartPosition.X.Scale,
                     StartPosition.X.Offset + OffsetPos.X,
                     StartPosition.Y.Scale,
@@ -468,7 +472,8 @@ function Library:MakeDraggableUsingParent(Instance, Parent, Cutoff, IsMainWindow
                     Mouse.Y - Parent.AbsolutePosition.Y
                 );
 
-                if ObjPos.Y > (Cutoff or 40) then
+                -- For rounded windows, allow dragging from anywhere in the top area
+                if ObjPos.Y > (Cutoff or 40) and not IsMainWindow then
                     return;
                 end;
 
