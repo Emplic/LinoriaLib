@@ -5205,6 +5205,10 @@ do
         ZIndex = 100;
         Parent = ScreenGui;
     });
+local KeybindCorner = Instance.new("UICorner")
+KeybindCorner.CornerRadius = UDim.new(0, 6)
+KeybindCorner.Parent = KeybindOuter
+
 
     local KeybindInner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
@@ -5214,6 +5218,9 @@ do
         ZIndex = 101;
         Parent = KeybindOuter;
     });
+local KeybindInnerCorner = Instance.new("UICorner")
+KeybindInnerCorner.CornerRadius = UDim.new(0, 5)
+KeybindInnerCorner.Parent = KeybindInner
 
     Library:AddToRegistry(KeybindInner, {
         BackgroundColor3 = 'MainColor';
@@ -5310,6 +5317,9 @@ function Library:Notify(...)
         ZIndex = 100;
         Parent = if Side == "left" then Library.LeftNotificationArea else Library.RightNotificationArea;
     });
+local NotifyCorner = Instance.new("UICorner")
+NotifyCorner.CornerRadius = UDim.new(0, 6)
+NotifyCorner.Parent = NotifyOuter
 
     local NotifyInner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
@@ -5319,6 +5329,9 @@ function Library:Notify(...)
         ZIndex = 101;
         Parent = NotifyOuter;
     });
+local NotifyInnerCorner = Instance.new("UICorner")
+NotifyInnerCorner.CornerRadius = UDim.new(0, 5)
+NotifyInnerCorner.Parent = NotifyInner
 
     Library:AddToRegistry(NotifyInner, {
         BackgroundColor3 = 'MainColor';
@@ -5998,6 +6011,10 @@ Library:MakeDraggable(DraggableHeader, 25, true);
                 ZIndex = 2;
                 Parent = Info.Side == 1 and LeftSide or RightSide;
             });
+    local GroupboxCorner = Instance.new("UICorner")
+    GroupboxCorner.CornerRadius = UDim.new(0, 6)
+    GroupboxCorner.Parent = BoxOuter
+
 
             Library:AddToRegistry(BoxOuter, {
                 BackgroundColor3 = 'BackgroundColor';
