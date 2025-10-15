@@ -5201,6 +5201,11 @@ do
         Parent = ScreenGui;
     });
 
+    local KeybindCorner = Instance.new("UICorner")
+    KeybindCorner.CornerRadius = UDim.new(0, 6)
+    KeybindCorner.Parent = KeybindOuter
+
+
     local KeybindInner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
@@ -5209,6 +5214,10 @@ do
         ZIndex = 101;
         Parent = KeybindOuter;
     });
+
+    local KeybindInnerCorner = Instance.new("UICorner")
+    KeybindInnerCorner.CornerRadius = UDim.new(0, 5)
+    KeybindInnerCorner.Parent = KeybindInner
 
     Library:AddToRegistry(KeybindInner, {
         BackgroundColor3 = 'MainColor';
@@ -5306,6 +5315,10 @@ function Library:Notify(...)
         Parent = if Side == "left" then Library.LeftNotificationArea else Library.RightNotificationArea;
     });
 
+    local NotifyCorner = Instance.new("UICorner")
+    NotifyCorner.CornerRadius = UDim.new(0, 6)
+    NotifyCorner.Parent = NotifyOuter
+
     local NotifyInner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
@@ -5314,6 +5327,10 @@ function Library:Notify(...)
         ZIndex = 101;
         Parent = NotifyOuter;
     });
+
+    local NotifyInnerCorner = Instance.new("UICorner")
+    NotifyInnerCorner.CornerRadius = UDim.new(0, 5)
+    NotifyInnerCorner.Parent = NotifyInner
 
     Library:AddToRegistry(NotifyInner, {
         BackgroundColor3 = 'MainColor';
