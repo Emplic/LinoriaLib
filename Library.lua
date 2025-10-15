@@ -5355,31 +5355,39 @@ function Library:Notify(...)
     YSize = YSize + 7
 
     local NotifyOuter = Library:Create('Frame', {
-        BorderColor3 = Color3.new(0, 0, 0);
+        BorderColor3 = Library.AccentColor;  -- Accent color border
         Size = UDim2.new(0, 0, 0, YSize);
         ClipsDescendants = true;
         ZIndex = 100;
         Parent = if Side == "left" then Library.LeftNotificationArea else Library.RightNotificationArea;
     });
-local NotifyCorner = Instance.new("UICorner")
-NotifyCorner.CornerRadius = UDim.new(0, 6)
-NotifyCorner.Parent = NotifyOuter
+
+    -- Add rounded corners to notifications
+    local NotifyCorner = Instance.new("UICorner")
+    NotifyCorner.CornerRadius = UDim.new(0, 6)
+    NotifyCorner.Parent = NotifyOuter
+
+    Library:AddToRegistry(NotifyOuter, {
+        BorderColor3 = 'AccentColor';  -- Register for theme updates
+    }, true);
 
     local NotifyInner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
-        BorderColor3 = Library.OutlineColor;
+        BorderColor3 = Library.AccentColor;  -- Accent color inner border
         BorderMode = Enum.BorderMode.Inset;
         Size = UDim2.new(1, 0, 1, 0);
         ZIndex = 101;
         Parent = NotifyOuter;
     });
-local NotifyInnerCorner = Instance.new("UICorner")
-NotifyInnerCorner.CornerRadius = UDim.new(0, 5)
-NotifyInnerCorner.Parent = NotifyInner
+
+    -- Add rounded corners to inner notification
+    local NotifyInnerCorner = Instance.new("UICorner")
+    NotifyInnerCorner.CornerRadius = UDim.new(0, 5)
+    NotifyInnerCorner.Parent = NotifyInner
 
     Library:AddToRegistry(NotifyInner, {
         BackgroundColor3 = 'MainColor';
-        BorderColor3 = 'OutlineColor';
+        BorderColor3 = 'AccentColor';  -- Accent color inner border
     }, true);
 
     local InnerFrame = Library:Create('Frame', {
@@ -5390,6 +5398,11 @@ NotifyInnerCorner.Parent = NotifyInner
         ZIndex = 102;
         Parent = NotifyInner;
     });
+
+    -- Add rounded corners to the inner frame
+    local InnerFrameCorner = Instance.new("UICorner")
+    InnerFrameCorner.CornerRadius = UDim.new(0, 4)
+    InnerFrameCorner.Parent = InnerFrame
 
     local Gradient = Library:Create('UIGradient', {
         Color = ColorSequence.new({
@@ -5424,12 +5437,17 @@ NotifyInnerCorner.Parent = NotifyInner
     local SideColor = Library:Create('Frame', {
         AnchorPoint = if Side == "left" then Vector2.new(0, 0) else Vector2.new(1, 0);
         Position = if Side == "left" then UDim2.new(0, -1, 0, -1) else UDim2.new(1, -1, 0, -1);
-        BackgroundColor3 = Library.AccentColor;
+        BackgroundColor3 = Library.AccentColor;  -- Accent color side indicator
         BorderSizePixel = 0;
         Size = UDim2.new(0, 3, 1, 2);
         ZIndex = 104;
         Parent = NotifyOuter;
     });
+
+    -- Add rounded corners to the side indicator (left/right edges)
+    local SideColorCorner = Instance.new("UICorner")
+    SideColorCorner.CornerRadius = UDim.new(0, 2)
+    SideColorCorner.Parent = SideColor
 
     function Data:Resize()
         XSize, YSize = Library:GetTextBounds(NotifyLabel.Text, Library.Font, 14);
@@ -5464,7 +5482,7 @@ NotifyInnerCorner.Parent = NotifyInner
     Data:Resize();
 
     Library:AddToRegistry(SideColor, {
-        BackgroundColor3 = 'AccentColor';
+        BackgroundColor3 = 'AccentColor';  -- Register side color for theme updates
     }, true);
 
     if Data.SoundId then
