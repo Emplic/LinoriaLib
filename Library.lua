@@ -2813,10 +2813,7 @@ do
                 Size = UDim2.new(1, -4, 0, 20);
                 Visible = IsVisible;
                 ZIndex = 5;
-            });
-            local UICorner_Outer = Instance.new("UICorner")
-UICorner_Outer.CornerRadius = UDim.new(0, 6)
-UICorner_Outer.Parent = Outer                                                                            
+            });                                                                         
 
             local Inner = Library:Create('Frame', {
                 BackgroundColor3 = Library.MainColor;
@@ -2825,11 +2822,7 @@ UICorner_Outer.Parent = Outer
                 Size = UDim2.new(1, 0, 1, 0);
                 ZIndex = 6;
                 Parent = Outer;
-            });
-local UICorner_Inner = Instance.new("UICorner")
-UICorner_Inner.CornerRadius = UDim.new(0, 5)
-UICorner_Inner.Parent = Inner
-                                                                                        
+            });                                                                       
 
             local Label = Library:CreateLabel({
                 Size = UDim2.new(1, 0, 1, 0);
