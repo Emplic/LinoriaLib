@@ -6400,7 +6400,7 @@ end
         BackgroundColor3 = 'MainColor';
         BorderColor3 = 'AccentColor';
     })
-
+    
     local WindowLabel = Library:CreateLabel({
         Position = UDim2.new(0, 7, 0, 0);
         Size = UDim2.new(1, -14, 0, 25);
@@ -6411,7 +6411,11 @@ end
     })
 
     if WindowInfo.Footer then
-        Library:CreateLabel({
+        local FooterLabel = Library:Create('TextLabel', {
+            BackgroundTransparency = 1;
+            Font = Library.Font;
+            TextSize = 16;
+            TextStrokeTransparency = 0;
             Position = UDim2.new(1, -7, 0, 0);
             Size = UDim2.new(0, 0, 0, 25);
             Text = WindowInfo.Footer;
@@ -6420,6 +6424,7 @@ end
             ZIndex = 1;
             Parent = Inner;
         })
+        Library:ApplyTextStroke(FooterLabel)
     end
 
     local MainSectionOuter = Library:Create('Frame', {
