@@ -6371,18 +6371,16 @@ function Library:CreateWindow(...)
     }
 
     local Outer = Library:Create('Frame', {
-        AnchorPoint = WindowInfo.AnchorPoint;
-        BackgroundColor3 = Color3.new(0, 0, 0);
-        BorderSizePixel = 0;
-        Position = WindowInfo.Position;
-        Size = WindowInfo.Size;
-        Visible = false;
-        ZIndex = 1;
-        Parent = ScreenGui;
-        Name = "Window";
-    })
-
-    Outer.BorderSizePixel = 0 
+            AnchorPoint = WindowInfo.AnchorPoint;
+            BackgroundColor3 = Color3.new(0, 0, 0);
+            BorderSizePixel = 0; 
+            Position = WindowInfo.Position;
+            Size = WindowInfo.Size;
+            Visible = false;
+            ZIndex = 1;
+            Parent = ScreenGui;
+            Name = "Window";
+        })
 
     Library:Create('UICorner', {
         CornerRadius = UDim.new(0, 8),
@@ -6391,14 +6389,40 @@ function Library:CreateWindow(...)
 
     local OuterStroke = Library:Create('UIStroke', {
         Parent = Outer,
-        Thickness = 2, -- Thickness of the border
-        Color = Library.Theme.Accent, -- Sets initial color
+        Thickness = 2,
+        Color = Library.AccentColor,
         Transparency = 0,
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
     })
 
     Library:AddToRegistry(OuterStroke, {
-        Color = 'Accent'
+        Color = 'AccentColor'
+    })
+
+    LibraryMainOuterFrame = Outer
+    Library:MakeDraggable(Outer, 25, true)
+    if WindowInfo.Resizable then Library:MakeResizable(Outer, Library.MinSize) end
+
+    local Inner = Library:Create('Frame', {
+        BackgroundColor3 = Library.MainColor;
+        BorderColor3 = Library.AccentColor;
+        BorderMode = Enum.BorderMode.Inset;
+        BorderSizePixel = 0; -- Set to 0
+        Position = UDim2.new(0, 1, 0, 1);
+        Size = UDim2.new(1, -2, 1, -2);
+        ZIndex = 1;
+        Parent = Outer;
+    })
+
+    
+
+    Library:Create('UICorner', {
+        CornerRadius = UDim.new(0, 8),
+        Parent = Inner
+    })
+
+    Library:AddToRegistry(Inner, {
+        BackgroundColor3 = 'MainColor';
     })
 
     LibraryMainOuterFrame = Outer
@@ -6414,13 +6438,6 @@ end
         Size = UDim2.new(1, -2, 1, -2);
         ZIndex = 1;
         Parent = Outer;
-    })
-
-    Inner.BorderSizePixel = 0
-    
-    Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 8), -- Must match the Outer radius
-        Parent = Inner
     })
 
     Library:AddToRegistry(Inner, {
