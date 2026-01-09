@@ -6381,6 +6381,26 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
         Name = "Window";
     })
+
+    Outer.BorderSizePixel = 0 
+
+    Library:Create('UICorner', {
+        CornerRadius = UDim.new(0, 8),
+        Parent = Outer
+    })
+
+    local OuterStroke = Library:Create('UIStroke', {
+        Parent = Outer,
+        Thickness = 2, -- Thickness of the border
+        Color = Library.Theme.Accent, -- Sets initial color
+        Transparency = 0,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+    })
+
+    Library:AddToRegistry(OuterStroke, {
+        Color = 'Accent'
+    })
+
     LibraryMainOuterFrame = Outer
     Library:MakeDraggable(Outer, 25, true)
     if WindowInfo.Resizable then Library:MakeResizable(Outer, Library.MinSize)
@@ -6394,6 +6414,13 @@ end
         Size = UDim2.new(1, -2, 1, -2);
         ZIndex = 1;
         Parent = Outer;
+    })
+
+    Inner.BorderSizePixel = 0
+    
+    Library:Create('UICorner', {
+        CornerRadius = UDim.new(0, 8), -- Must match the Outer radius
+        Parent = Inner
     })
 
     Library:AddToRegistry(Inner, {
